@@ -1,0 +1,101 @@
+import express from "express";
+import cloudinary from "../lib/cloudConfig.js";
+import Post from "../models/Post.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+const router = express.Router();
+
+router.post("/", authMiddleware, async (req, res) =>{
+    try {
+        const { title, caption, rating, image } = req.body;
+        if(!title || !caption || !rating || !image){
+            return res.status(400).json({message: "All fields are required."});
+        } 
+        const uploadResponse = await cloudinary.uploader.upload(image, {
+        folder: "Page-mates",
+    });
+        const imageUrl = uploadResponse.secure_url;
+        const newPost = new Post({
+            title,
+            caption,
+            rating,
+            image: imageUrl,
+            genres,
+            user: req.user._id,
+        });
+
+        await newPost.save();
+
+        res.status(201).json(newPost);
+
+    } catch (error) {
+        console.log("error in creation of post", error);
+    }
+})
+
+router.get('/', authMiddleware, async (req, res) => {
+    try {
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 5;
+
+        const skip = (page - 1) * limit;
+
+        const posts = await Post.find()
+        .sort({ createdAt: -1})
+        .skip(skip)
+        .limit(limit)
+        .populate("user", "username profileImage");
+        
+        const total = await Post.countDocuments();
+
+        res.send({
+            posts,
+            currentPage: page,
+            totalPosts: total,
+            totalPages: Math.ceil(totalPosts  / limit) 
+        });
+    } catch (error) {
+        console.log("error getting thr posts", error);
+        res.status(500).json({ message: "Internal server error"});
+    }
+});
+
+router.delete("/:id", authMiddleware, async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if(!post){
+            return res.status(404).json({ message: "Book not found"});
+        }
+
+        if(post.user.toString() != req.user._id.toString()){
+            return res.status(401).json({ message: "Unthorized access"});
+        }
+
+        if(post.image && post.image.includes("cloudinary")){
+            try {
+                const publicId = book.image.split("/").pop().split(".")[0];
+                await cloudinary.uploader.destroy(publicId);
+            } catch (deleteErr) {
+                console.log("Error deleting image from cloud", deleteErr);
+            }
+        }
+        await post.deleteOne();
+        
+        res.json({ messgae: "Deleted successfully!!"});
+    } catch (error) {
+        console.log("Error in deleting the book", error);
+        res.status(500).json({ message: "Internal server error"});
+    }
+});
+
+router.get('/user', authMiddleware, async (req, res) =>{
+    try {
+    const posts = await Post.find({ user: req.user._id}).sort({ createdAt: -1 });
+    res.json(posts);
+    } catch (error) {
+        console.log("Error getting the posts", error);
+        res.status(500).json({ message: "Internal server Error"});
+    }
+})
+
+
+export default router;

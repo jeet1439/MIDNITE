@@ -1,15 +1,22 @@
 import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
-const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+
+const authMiddleware = async (req, res, next) => {
+  const token = req.headers.Authorization?.replace("Bearer", "");
   if (!token) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(401).json({ message: "Unauthorized Access" });
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decoded.id };
+    const user = await User.findById(decoded.userId).select("-password");
+    if(!user){
+      return res.status(401).json({ message: "Invalid Token"});
+    }
+    req.user = user;
     next();
-  } catch (err) {
+  } catch (error) {
+    console.log("Authentication error", error)
     res.status(401).json({ message: "Invalid token" });
   }
 };
