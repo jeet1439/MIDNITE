@@ -1,19 +1,31 @@
-import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useState } from 'react'
 import styles from "../../assets/styles/signup.styles.js";
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../../assets/constants/colors';
 import { Link, router } from "expo-router";
+import { useAuthStore } from '../../store/authStore.js';
+import { ActivityIndicator } from 'react-native';
 
 export default function Signup() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSignup = () =>{
-      console.log("signup");
+    const { user, isLoading, signup} = useAuthStore();
+    
+    const handleSignup = async() =>{
+
+      // if (!username.trim() || !email.trim() || !password.trim()) {
+      // Alert.alert("Alert:", "All fiels are required");
+      // return;
+      // }
+
+      const res = await signup( username, email, password );
+      if(!res.success){
+        Alert.alert("Error", res.error);
+      }
     }
   return (
    <KeyboardAvoidingView
@@ -39,11 +51,11 @@ export default function Signup() {
             />
             <TextInput
               style={styles.input}
-              placeholder='jeet banik'
+              placeholder='jeet_dev01'
               placeholderTextColor={COLORS.placeholderText}
               value={username}
               onChangeText={setUsername}
-              autoCapitalize="none"            />
+              autoCapitalize="none"/>
           </View>
         </View>
 
