@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post("/", authMiddleware, async (req, res) =>{
     try {
-        const { title, caption, rating, image } = req.body;
+        const { title, caption, rating, image, genres } = req.body;
         if(!title || !caption || !rating || !image){
             return res.status(400).json({message: "All fields are required."});
         } 

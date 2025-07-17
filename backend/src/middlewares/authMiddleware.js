@@ -1,22 +1,31 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers.Authorization?.replace("Bearer", "");
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized Access" });
-  }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select("-password");
-    if(!user){
-      return res.status(401).json({ message: "Invalid Token"});
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      console.log("No or invalid Authorization header");
+      return res.status(401).json({ message: "Unauthorized Access" });
     }
+
+    const token = authHeader.split(" ")[1].trim();
+    // console.log("Token received:", token);
+
+    const decoded = jwt.verify(token, process.env.JWT_SRC);
+    // console.log("Decoded token:", decoded);
+
+    const user = await User.findById(decoded.userId).select("-password");
+    if (!user) {
+      console.log("User not found");
+      return res.status(401).json({ message: "Invalid Token" });
+    }
+
     req.user = user;
     next();
   } catch (error) {
-    console.log("Authentication error", error)
+    console.log("Authentication error", error.message);
     res.status(401).json({ message: "Invalid token" });
   }
 };
