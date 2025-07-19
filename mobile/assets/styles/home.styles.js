@@ -13,94 +13,94 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background,
   },
   listContainer: {
-    padding: 16,
-    paddingBottom: 80, 
+    padding: 0,
+    paddingBottom: 80,
   },
   header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingLeft: 16,
+    paddingRight: 16,
     marginBottom: 20,
     alignItems: "center",
   },
   headerTitle: {
     fontSize: 24,
-    fontFamily: "JetBrainsMono-Medium",
+    fontFamily: "SpaceMono-Regular",
     letterSpacing: 0.5,
     color: COLORS.primary,
     marginBottom: 8,
   },
-  headerSubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    textAlign: "center",
-  },
-  bookCard: {
-    backgroundColor: COLORS.cardBackground,
-    borderRadius: 16,
+  postCard: {
     marginBottom: 20,
-    padding: 16,
-    shadowColor: COLORS.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: COLORS.background,
   },
-  bookHeader: {
+
+  postHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 8,
+    paddingHorizontal: 8,
   },
+
   userInfo: {
     flexDirection: "row",
     alignItems: "center",
   },
+
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     marginRight: 10,
   },
+
   username: {
-    fontSize: 15,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "500",
     color: COLORS.textPrimary,
   },
-  bookImageContainer: {
+
+  postImageContainer: {
     width: "100%",
-    height: 200,
-    borderRadius: 12,
-    overflow: "hidden",
-    marginBottom: 12,
+    aspectRatio: 1, // square like Instagram
     backgroundColor: COLORS.border,
   },
-  bookImage: {
+
+  postImage: {
     width: "100%",
     height: "100%",
   },
-  bookDetails: {
-    padding: 4,
+
+  postDetails: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
-  bookTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: COLORS.textPrimary,
-    marginBottom: 6,
+
+  postTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#192131ff",
+    marginBottom: 4,
   },
+
   ratingContainer: {
     flexDirection: "row",
-    marginBottom: 8,
+    marginBottom: 4,
   },
+
   caption: {
     fontSize: 14,
     color: COLORS.textDark,
-    marginBottom: 8,
-    lineHeight: 20,
+    marginBottom: 6,
   },
+
   date: {
     fontSize: 12,
     color: COLORS.textSecondary,
   },
+
   emptyContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -121,6 +121,37 @@ const styles = StyleSheet.create({
   },
   footerLoader: {
     marginVertical: 20,
+  },
+  followButton: {
+    backgroundColor: COLORS.primary,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+
+  followButtonText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+
+  engagementText: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    marginBottom: 6,
+  },
+  likeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+    justifyContent: "space-between",
+  },
+
+  likeButton: {
+    flexDirection: "row",
+    marginRight: 10,
+    padding: 4,
+    gap: 5,
   },
 });
 

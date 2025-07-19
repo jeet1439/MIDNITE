@@ -18,12 +18,10 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../../store/authStore.js';
-import { API_URL } from '../../assets/constants/api.js';
 
 const CreatePostScreen = () => {
   const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
-  const [rating, setRating] = useState(3);
   const [image, setImage] = useState(null);
   const [imageBase64, setImageBase64] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -63,10 +61,9 @@ const CreatePostScreen = () => {
     }
   };
 
-  const handleRating = (val) => setRating(val);
 
   const handleSubmit = async () => {
-    if(!title || !caption || !imageBase64 || !rating){
+    if(!title || !caption || !imageBase64){
       Alert.alert("Error", "Please fill all the fields");
       return;
     }
@@ -79,7 +76,7 @@ const CreatePostScreen = () => {
 
       const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
       console.log(token);
-      const res  = await fetch(`http://192.168.0.3:3000/api/posts`, {
+      const res  = await fetch(`http://192.168.0.9:3000/api/posts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -88,7 +85,6 @@ const CreatePostScreen = () => {
         body: JSON.stringify({
           title,
           caption,
-          rating,
           image: imageDataUrl,
           genres: ["Action"],
         }),
@@ -100,7 +96,6 @@ const CreatePostScreen = () => {
       Alert.alert("Success", "Posted successfully");
       setTitle("");
       setCaption("");
-      setRating(3);
       setImage(null);
       setImageBase64(null);
       router.push("/");
@@ -150,27 +145,6 @@ const CreatePostScreen = () => {
               multiline
             />
           </View>
-
-          {/* Rating */}
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Rating</Text>
-            <View style={styles.ratingContainer}>
-              {[1, 2, 3, 4, 5].map((num) => (
-                <TouchableOpacity
-                  key={num}
-                  onPress={() => handleRating(num)}
-                  style={styles.starButton}
-                >
-                  <FontAwesome
-                    name={num <= rating ? 'star' : 'star-o'}
-                    size={24}
-                    color="#facc15"
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
           {/* Image Picker */}
           <View style={styles.formGroup}>
             <Text style={styles.label}>Image</Text>

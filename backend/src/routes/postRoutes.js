@@ -6,8 +6,8 @@ const router = express.Router();
 
 router.post("/", authMiddleware, async (req, res) =>{
     try {
-        const { title, caption, rating, image, genres } = req.body;
-        if(!title || !caption || !rating || !image){
+        const { title, caption, image, genres } = req.body;
+        if(!title || !caption || !image){
             return res.status(400).json({message: "All fields are required."});
         } 
         const uploadResponse = await cloudinary.uploader.upload(image, {
@@ -17,7 +17,6 @@ router.post("/", authMiddleware, async (req, res) =>{
         const newPost = new Post({
             title,
             caption,
-            rating,
             image: imageUrl,
             genres,
             user: req.user._id,
@@ -33,31 +32,31 @@ router.post("/", authMiddleware, async (req, res) =>{
 })
 
 router.get('/', authMiddleware, async (req, res) => {
-    try {
-        const page = req.query.page || 1;
-        const limit = req.query.limit || 5;
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
 
-        const skip = (page - 1) * limit;
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('user', 'username profileImage');
 
-        const posts = await Post.find()
-        .sort({ createdAt: -1})
-        .skip(skip)
-        .limit(limit)
-        .populate("user", "username profileImage");
-        
-        const total = await Post.countDocuments();
+    const totalPosts = await Post.countDocuments();
 
-        res.send({
-            posts,
-            currentPage: page,
-            totalPosts: total,
-            totalPages: Math.ceil(totalPosts  / limit) 
-        });
-    } catch (error) {
-        console.log("error getting thr posts", error);
-        res.status(500).json({ message: "Internal server error"});
-    }
+    res.status(200).json({
+      posts,
+      currentPage: page,
+      totalPosts,
+      totalPages: Math.ceil(totalPosts / limit)
+    });
+  } catch (error) {
+    console.error("Error getting the posts:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
+
 
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
