@@ -42,7 +42,7 @@ const CreatePostScreen = () => {
       mediaTypes: "images",
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.8,
+      quality: 1,
       base64: true,
      })
      if(!result.canceled){
@@ -75,8 +75,8 @@ const CreatePostScreen = () => {
       const imageType = fileType ? `image/${fileType.toLowerCase()}` : "image/jpeg";
 
       const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
-      console.log(token);
-      const res  = await fetch(`http://192.168.0.9:3000/api/posts`, {
+      // console.log(token);
+      const res  = await fetch(`http://192.168.0.100:3000/api/posts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

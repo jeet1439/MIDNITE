@@ -16,27 +16,30 @@ import COLORS from "../../assets/constants/colors.js";
 import Loader from "../components/Loader.jsx";
 import { useFocusEffect } from "expo-router";
 
+
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function Home() {
-  const { token } = useAuthStore();
+  const { token , user, setUser} = useAuthStore();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+   
+  // console.log(user);
 
   const fetchPosts = async (pageNum = 1, refresh = false) => {
     try {
       if (refresh) setRefreshing(true);
       else if (pageNum === 1) setLoading(true);
 
-      const response = await fetch(`http://192.168.0.9:3000/api/posts/?page=${pageNum}&limit=2`, {
+      const response = await fetch(`http://192.168.0.100:3000/api/posts/?page=${pageNum}&limit=2`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
-      console.log(data)
+      // console.log(data)
       if (!response.ok) throw new Error(data.message || "Failed to fetch books");
 
       // todo fix it later
@@ -73,13 +76,85 @@ export default function Home() {
     fetchPosts(); // always fetch latest posts from page 1
   }, [])
 );
-  const handleLoadMore = async () => {
-    if (hasMore && !loading && !refreshing) {
-      await fetchPosts(page + 1);
-    }
-  };
+const handleLoadMore = async () => {
+  if (hasMore && !loading && !refreshing) {
+    await fetchPosts(page + 1);
+  }
+};
+
+const handleFollow = async (userId) => {
+  try {
+    const res = await fetch(`http://192.168.0.100:3000/api/user/follow/${userId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    const isFollowing = user.followings.includes(userId);
+
+    const updatedFollowings = isFollowing ? 
+         user.followings.filter(id => id !== userId)
+      :  [...user.followings, userId];        
+
+    setUser({
+      ...user,
+      followings: updatedFollowings,
+    });
+
+  } catch (err) {
+    console.log("Follow error", err);
+  }
+};
+
+const handleLike = async (postId) => {
+  try {
+    const res = await fetch(`http://192.168.0.100:3000/api/posts/like/${postId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    const isLiked = user.likedPosts?.includes(postId);
+
+    const updatedLikedPosts = isLiked
+      ? user.likedPosts.filter(id => id !== postId) // unlike
+      : [...(user.likedPosts || []), postId];       // like
+
+    setUser({
+      ...user,
+      likedPosts: updatedLikedPosts,
+    });
+   
+     setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post._id === postId
+          ? {
+              ...post,
+              likes: isLiked
+                ? post.likes.filter(id => id !== user._id)  
+                : [...post.likes, user._id]                
+            }
+          : post
+      )
+    );
+ 
+  } catch (err) {
+    console.log("Like error", err);
+  }
+};
+
+// console.log(user);
 
 const renderItem = ({ item }) => (
+  
   <View style={styles.postCard}>
     {/* Header: Avatar + Username + Follow */}
     <View style={styles.postHeader}>
@@ -90,10 +165,22 @@ const renderItem = ({ item }) => (
         />
         <Text style={styles.username}>{item.user.username}</Text>
       </View>
+        {
+        item.user._id !== user._id ? (
+        <TouchableOpacity style={styles.followButton} onPress={() => handleFollow(item.user._id)} >
 
-      <TouchableOpacity style={styles.followButton}>
-        <Text style={styles.followButtonText}>Follow</Text>
-      </TouchableOpacity>
+        {
+          user.followings.includes(item.user._id) ?
+           ( <Text style={styles.followButtonText}>Following</Text> ): 
+
+           ( <Text style={styles.followButtonText}>Follow</Text>)
+        }
+        </TouchableOpacity>
+        ) : (
+        <Text></Text>
+        )
+        }
+      
     </View>
 
     {/* Main Image */}
@@ -105,12 +192,35 @@ const renderItem = ({ item }) => (
     <View style={styles.postDetails}>
       <View style={styles.likeRow}>
       <View>
-       <TouchableOpacity style={styles.likeButton}>
-          <Ionicons name="heart-outline" size={20} color={COLORS.textPrimary} />
-          <Text>{item.likes?.length || 0}</Text>
-        </TouchableOpacity>
+
+       <TouchableOpacity 
+        style={styles.likeButton}
+        onPress={() => handleLike(item._id)}
+      >
+      {
+        user?.likedPosts?.includes(item._id) ? (
+          <Ionicons
+          name={"heart"}
+          size={20}
+          color={"red"} 
+        />
+        ) :
+        (
+          <Ionicons
+          name={"heart-outline"}
+          size={20}
+          color={COLORS.textPrimary}
+        />
+        )
+      }
+        {/* <Ionicons
+          name={user?.likedPosts?.includes(item._id) ? "heart" : "heart-outline"}
+          size={20}
+          color={user?.likedPosts?.includes(item._id) ? "red" : COLORS.textPrimary}
+        /> */}
+        <Text>{item.likes?.length || 0}</Text>
+      </TouchableOpacity>
       </View>
-        
         <Text style={styles.engagementText}>{item.views || 0} views</Text>
       </View>
 
@@ -140,6 +250,10 @@ const renderItem = ({ item }) => (
   // };
 
   if (loading) return <Loader />;
+
+  //eliminates the crash
+  if (!user || !token) return <Loader />;
+
 
   return (
     <View style={styles.container}>

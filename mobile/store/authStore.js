@@ -5,11 +5,13 @@ export const useAuthStore = create((set, get) => ({
   user: null,
   token: null,
   isLoading: false,
-
+  
+  setUser: (user) => set({ user }),
+  
   signup: async(username, email, password) =>{
     set({isLoading : true});
     try {
-        const res = await fetch("http://192.168.0.9:3000/api/auth/signup", {
+        const res = await fetch("http://192.168.0.100:3000/api/auth/signup", {
             method: "POST",
             headers:{
                 "Content-Type": "application/json",
@@ -52,7 +54,7 @@ export const useAuthStore = create((set, get) => ({
   login: async( email, password ) => {
     set({isLoading: true});
     try {
-        const res = await fetch("http://192.168.0.9:3000/api/auth/login", {
+        const res = await fetch("http://192.168.0.100:3000/api/auth/login", {
             method: "POST",
             headers:{
                 "Content-Type": "application/json",
@@ -82,5 +84,6 @@ export const useAuthStore = create((set, get) => ({
     await AsyncStorage.removeItem("token");
     await AsyncStorage.removeItem("user");
     set({token: null, user: null});
+    router.replace("/(auth)");
   }
 }));

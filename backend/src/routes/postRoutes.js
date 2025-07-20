@@ -1,6 +1,7 @@
 import express from "express";
 import cloudinary from "../lib/cloudConfig.js";
 import Post from "../models/Post.js";
+import User from "../models/User.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
@@ -95,6 +96,37 @@ router.get('/user', authMiddleware, async (req, res) =>{
         res.status(500).json({ message: "Internal server Error"});
     }
 })
+
+router.post("/like/:postId", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { postId } = req.params;
+
+    const post = await Post.findById(postId);
+    const user = await User.findById(userId);
+
+    if (!post || !user)
+      return res.status(404).json({ message: "Post or User not found" });
+
+    const alreadyLiked = post.likes.includes(userId);
+
+    if (alreadyLiked) {
+      post.likes.pull(userId); // remove from post likes
+      user.likedPosts.pull(postId); // remove from user's likedPosts
+    } else {
+      post.likes.push(userId); // add to post likes
+      user.likedPosts.push(postId); // add to user's likedPosts
+    }
+
+    await post.save();
+    await user.save();
+
+    res.status(200).json({ message: alreadyLiked ? "Unliked" : "Liked" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+});
+
 
 
 export default router;
