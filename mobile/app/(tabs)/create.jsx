@@ -42,7 +42,7 @@ const CreatePostScreen = () => {
       mediaTypes: "images",
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0.8,
       base64: true,
      })
      if(!result.canceled){

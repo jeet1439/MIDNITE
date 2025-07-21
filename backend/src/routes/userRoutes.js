@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
-
+import cloudinary from "../lib/cloudConfig.js";
 
 const router = express.Router();
 
@@ -35,21 +35,36 @@ router.put("/update-profile", authMiddleware, async (req, res) => {
   const { newImage } = req.body;
 
   if (!newImage || typeof newImage !== "string") {
-    return res.status(400).json({ message: "A valid image URL string is required" });
+    return res.status(400).json({ message: "A valid image string is required" });
   }
 
   try {
+    // Upload base64 image to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(newImage, {
+      folder: "ProfileImages",
+    });
+
+    const imageUrl = uploadResponse.secure_url;
+
     const user = await User.findByIdAndUpdate(
-      req.user.id,
-      { $push: { profileImage: newImage } },
+       req.user.id,
+       { 
+        $push: { 
+          profileImage: { 
+            $each: [imageUrl], 
+            $position: 0 
+          } 
+        } 
+      },
       { new: true }
     );
 
-    res.status(200).json({ message: "Profile image added", user });
+    res.status(200).json({ message: "Profile image updated", user });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
+
 
 
 router.put("/update-email", authMiddleware, async (req, res) => {

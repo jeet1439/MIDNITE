@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema({
         type: [String],
         default: []
     },
+    bio: {
+    type: String,
+    default: "",
+    maxlength: 300,
+    },
     followers: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

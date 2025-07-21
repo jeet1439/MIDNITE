@@ -59,6 +59,33 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 
+router.get('/following', authMiddleware, async( req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalPosts = await Post.countDocuments({
+      user: { $in: user.followings },
+    });
+
+    const posts = await Post.find({ user: { $in: user.followings } })
+      .populate("user", "username profileImage")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalPosts / limit);
+    res.json({ posts, totalPages });
+    
+  } catch (err) {
+    console.error("Error getting following posts:", err);
+    res.status(500).json({ message: "Failed to fetch following posts" });
+  }
+})
+
 router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);

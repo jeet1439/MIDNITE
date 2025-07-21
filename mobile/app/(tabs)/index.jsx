@@ -160,7 +160,7 @@ const renderItem = ({ item }) => (
     <View style={styles.postHeader}>
       <View style={styles.userInfo}>
         <Image
-          source={item.user?.profileImage?.[0]}
+          source={item.user?.profileImage[0]}
           style={styles.avatar}
         />
         <Text style={styles.username}>{item.user.username}</Text>
