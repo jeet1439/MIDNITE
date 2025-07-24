@@ -114,15 +114,19 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     }
 });
 
-router.get('/user', authMiddleware, async (req, res) =>{
+router.get('/user', authMiddleware, async (req, res) => {
     try {
-    const posts = await Post.find({ user: req.user._id}).sort({ createdAt: -1 });
-    res.json(posts);
+        const posts = await Post.find({ user: req.user._id })
+            .sort({ createdAt: -1 })
+            .populate("user", "username profileImage"); // only select these fields
+
+        res.json(posts);
     } catch (error) {
         console.log("Error getting the posts", error);
-        res.status(500).json({ message: "Internal server Error"});
+        res.status(500).json({ message: "Internal server Error" });
     }
-})
+});
+
 
 router.post("/like/:postId", authMiddleware, async (req, res) => {
   try {

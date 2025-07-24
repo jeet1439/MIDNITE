@@ -213,11 +213,6 @@ const renderItem = ({ item }) => (
         />
         )
       }
-        {/* <Ionicons
-          name={user?.likedPosts?.includes(item._id) ? "heart" : "heart-outline"}
-          size={20}
-          color={user?.likedPosts?.includes(item._id) ? "red" : COLORS.textPrimary}
-        /> */}
         <Text>{item.likes?.length || 0}</Text>
       </TouchableOpacity>
       </View>
@@ -231,23 +226,6 @@ const renderItem = ({ item }) => (
     </View>
   </View>
 );
-
-
-  // const renderRatingStars = (rating) => {
-  //   const stars = [];
-  //   for (let i = 1; i <= 5; i++) {
-  //     stars.push(
-  //       <Ionicons
-  //         key={i}
-  //         name={i <= rating ? "star" : "star-outline"}
-  //         size={16}
-  //         color={i <= rating ? "#f4b400" : COLORS.textSecondary}
-  //         style={{ marginRight: 2 }}
-  //       />
-  //     );
-  //   }
-  //   return stars;
-  // };
 
   if (loading) return <Loader />;
 
