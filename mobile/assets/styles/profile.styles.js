@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 40,
+    paddingTop: 10,
   },
 
   profileHeader: {
@@ -210,6 +210,64 @@ const styles = StyleSheet.create({
     marginRight: 10,
     padding: 4,
     gap: 5,
+  },
+
+   modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    width: "85%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  input: {
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 6,
+    padding: 10,
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
+  },
+  cancelButton: {
+    color: "red",
+    fontWeight: "bold",
+  },
+  saveButton: {
+    color: "green",
+    fontWeight: "bold",
+  },
+   menu: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 6,
+    elevation: 5,
+    zIndex: 10,
+  },
+  deleteText: {
+    color: "red",
+    paddingVertical: 5,
+  },
+  cancelText: {
+    color: "gray",
+    paddingVertical: 5,
   },
 });
 

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../../store/authStore.js'
@@ -16,9 +16,12 @@ export default function Settings() {
   };
 
   const handleReportIssue = () => {
-    Alert.alert("Report Issue", "Open feedback form or email client.");
+    Alert.alert("Report Issue", "Feedback form or email client.");
   };
-
+  
+  const handlePassword = () => {
+    Alert.alert("Update password", "both new and old pass required.");
+  }
   return (
      <View style={styles.container}>
       <Text style={styles.header}>Settings</Text>
@@ -32,7 +35,10 @@ export default function Settings() {
         <Ionicons name="mail-outline" size={20} color={COLORS.textPrimary} />
         <Text style={styles.optionText}>Edit Personal Info</Text>
       </TouchableOpacity>
-
+      <TouchableOpacity style={styles.option} onPress={handlePassword}>
+        <Ionicons name="lock-closed-outline" size={20} color={COLORS.textPrimary} />
+        <Text style={styles.optionText}>Update Password</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.option} onPress={handleReportIssue}>
         <Ionicons name="alert-circle-outline" size={20} color={COLORS.textPrimary} />
         <Text style={styles.optionText}>Report Issue</Text>

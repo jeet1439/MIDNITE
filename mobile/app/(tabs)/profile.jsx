@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator, TextInput, Modal } from "react-native";
 import React, { useCallback } from "react";
 import { useAuthStore } from "../../store/authStore.js";
 import COLORS from "../../assets/constants/colors.js";
@@ -18,7 +18,9 @@ export default function ProfileTab() {
   const [posts, setPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(true);
 
-  if (!user) return <Loader />;
+  const [bioModalVisible, setBioModalVisible] = useState(false);
+  const [newBio, setNewBio] = useState(user?.bio || "");
+  const [menuVisible, setMenuVisible] = useState(false);
 
 
   const updateProfileImage = async (imageDataUrl) => {
@@ -168,6 +170,32 @@ export default function ProfileTab() {
     }
   };
 
+
+  const handleDeletePost = async (id) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://192.168.0.100:3000/api/posts/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to delete post");
+      }
+      Alert.alert("Deleted", "Post has been deleted");
+      setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+    } catch (error) {
+      console.log("Delete post error:", error);
+      Alert.alert("Error", "Could not delete post");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const renderItem = ({ item }) => (
 
     <View style={styles.postCard}>
@@ -180,10 +208,26 @@ export default function ProfileTab() {
           />
           <Text style={styles.username}>{item.user.username}</Text>
         </View>
-        <TouchableOpacity  disabled={loading} 
-        onPress={() => console.log("Function to delete post")}>
-        <Ionicons name="ellipsis-vertical" size={20} color="gray" />
-      </TouchableOpacity>
+        <TouchableOpacity disabled={loading}
+          onPress={() => setMenuVisible(true)}>
+          <Ionicons name="ellipsis-vertical" size={20} color="gray" />
+        </TouchableOpacity>
+        {menuVisible && (
+          <View style={styles.menu}>
+            <TouchableOpacity
+              onPress={async () => {
+                setMenuVisible(false);
+                await handleDeletePost(item._id);
+              }}
+            >
+              <Text style={styles.deleteText}>Delete Post</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setMenuVisible(false)}>
+              <Text style={styles.cancelText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
 
       {/* Main Image */}
@@ -230,67 +274,137 @@ export default function ProfileTab() {
     </View>
   );
 
-  if (!user) return <Loader />;
+  const updateBio = async (bioText) => {
+    try {
+      const response = await fetch("http://192.168.0.100:3000/api/user/add-bio", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // assuming you have the token
+        },
+        body: JSON.stringify({ bio: bioText }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update bio");
+      }
+
+      Alert.alert("Success", "Bio updated successfully");
+      // setUser((prev) => ({ ...prev, bio: data.bio }));
+      setUser({
+        ...user,
+        bio: data.bio,
+      });
+
+    } catch (error) {
+      console.error("Update bio error:", error);
+      Alert.alert("Error", "Could not update bio");
+    }
+  };
+   
+  console.log(user);
 
   return (
     <View style={styles.container}>
-      <View style={styles.profileHeader}>
-  <TouchableOpacity onPress={pickImage}>
-    <Image
-      source={{ uri: user.profileImage[0].replace("svg", "png").trim() }}
-      style={styles.profileAvatar}
-    />
-  </TouchableOpacity>
+      {!user ? (
+        <Loader />
+      ) : (
+        <>
+          <View style={styles.container}>
+            <View style={styles.profileHeader}>
+              <TouchableOpacity onPress={pickImage}>
+                <Image
+                source={{uri: user.profileImage[0].replace("svg", "png").trim()}}
+                  style={styles.profileAvatar}
+                />
+              </TouchableOpacity>
 
-  <View style={styles.details}>
-    <View style={styles.flexrow}> 
-    <Text style={styles.profileUsername}>{user.username}</Text>
-    <TouchableOpacity onPress={() => console.log(" write the function to edit the bio and all")}>
-    <Ionicons name="create-outline" size={18} color="gray" /></TouchableOpacity>
-    </View>
-    <View style={styles.statsContainer}>
-      <View style={styles.statBox}>
-        <Text style={styles.statNumber}>{user.followers.length}</Text>
-        <Text style={styles.statLabel}>Followers</Text>
-      </View>
-      <View style={styles.statBox}>
-        <Text style={styles.statNumber}>{user.followings.length}</Text>
-        <Text style={styles.statLabel}>Following</Text>
-      </View>
-      <View style={styles.statBox}>
-        <Text style={styles.statNumber}>{user.likedPosts.length}</Text>
-        <Text style={styles.statLabel}>Likes</Text>
-      </View>
-    </View>
-  </View>
-</View>
-  <View style={styles.profileHeader}>
-  <Text>🌍 Traveller | 💻 Software Developer
-   Exploring the world one bug & border at a time 🌐✈️
-📍 Always coding, always wandering</Text>
-  </View>
-      <FlatList
-        data={posts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item._id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={() => fetchPosts(1, true)}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
-          />
-        }
-        onEndReachedThreshold={0.1}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="book-outline" size={60} color={COLORS.textSecondary} />
-            <Text style={styles.emptyText}>No posts yet</Text>
+              <View style={styles.details}>
+                <View style={styles.flexrow}>
+                  <Text style={styles.profileUsername}>{user.username}</Text>
+                  <TouchableOpacity onPress={() => setBioModalVisible(true)}>
+                    <Ionicons name="create-outline" size={18} color="gray" /></TouchableOpacity>
+                </View>
+                <View style={styles.statsContainer}>
+                  <View style={styles.statBox}>
+                    <Text style={styles.statNumber}>{user.followers.length}</Text>
+                    <Text style={styles.statLabel}>Followers</Text>
+                  </View>
+                  <View style={styles.statBox}>
+                    <Text style={styles.statNumber}>{user.followings.length}</Text>
+                    <Text style={styles.statLabel}>Following</Text>
+                  </View>
+                  <View style={styles.statBox}>
+                    <Text style={styles.statNumber}>{user.likedPosts.length}</Text>
+                    <Text style={styles.statLabel}>Likes</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+            <View style={styles.profileHeader}>
+              <Text style={styles.profileBio}>{user?.bio || ""}</Text>
+            </View>
+            <Modal
+              visible={bioModalVisible}
+              transparent
+              animationType="slide"
+              onRequestClose={() => setBioModalVisible(false)}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Edit Your Bio</Text>
+
+                  <TextInput
+                    style={styles.input}
+                    multiline
+                    value={newBio}
+                    onChangeText={setNewBio}
+                  />
+
+                  <View style={styles.buttonRow}>
+                    <TouchableOpacity onPress={() => setBioModalVisible(false)}>
+                      <Text style={styles.cancelButton}>Cancel</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => {
+                      updateBio(newBio);
+                      setBioModalVisible(false);
+                    }}>
+                      <Text style={styles.saveButton}>Save</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
+            <FlatList
+              data={posts}
+              renderItem={renderItem}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={styles.listContainer}
+              showsVerticalScrollIndicator={false}
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => fetchPosts(1, true)}
+                  colors={[COLORS.primary]}
+                  tintColor={COLORS.primary}
+                />
+              }
+              onEndReachedThreshold={0.1}
+              ListEmptyComponent={
+                <View style={styles.emptyContainer}>
+                  <Ionicons name="book-outline" size={60} color={COLORS.textSecondary} />
+                  <Text style={styles.emptyText}>No posts yet</Text>
+                </View>
+              }
+            />
           </View>
-        }
-      />
+
+        </>
+      )}
     </View>
+
   );
 }

@@ -15,6 +15,7 @@ import { formatPublishDate } from "../../lib/utils.js";
 import COLORS from "../../assets/constants/colors.js";
 import Loader from "../components/Loader.jsx";
 import { useFocusEffect } from "expo-router";
+import { router } from 'expo-router';
 
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -154,7 +155,6 @@ const handleLike = async (postId) => {
 // console.log(user);
 
 const renderItem = ({ item }) => (
-  
   <View style={styles.postCard}>
     {/* Header: Avatar + Username + Follow */}
     <View style={styles.postHeader}>
@@ -163,7 +163,10 @@ const renderItem = ({ item }) => (
           source={item.user?.profileImage[0]}
           style={styles.avatar}
         />
-        <Text style={styles.username}>{item.user.username}</Text>
+        <TouchableOpacity onPress={() => router.push(`/(userProfile)/${item.user._id}`)}>
+         <Text style={styles.username}>{item.user.username}</Text>
+        </TouchableOpacity>
+        {/* <Text style={styles.username}>{item.user.username}</Text> */}
       </View>
         {
         item.user._id !== user._id ? (

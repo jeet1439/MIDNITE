@@ -54,6 +54,7 @@ router.post("/signup", async (req, res) => {
         followers: user.followers,
         followings: user.followings,
         likedPosts: user.likedPosts,
+        bio: user.bio,
         },
     });
 
@@ -92,6 +93,7 @@ router.post("/login", async (req, res) => {
         followers: user.followers,
         followings: user.followings,
         likedPosts: user.likedPosts,
+        bio: user.bio,
         },
     });
 

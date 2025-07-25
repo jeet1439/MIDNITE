@@ -90,7 +90,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
         if(!post){
-            return res.status(404).json({ message: "Book not found"});
+            return res.status(404).json({ message: "Post not found"});
         }
 
         if(post.user.toString() != req.user._id.toString()){
@@ -99,7 +99,7 @@ router.delete("/:id", authMiddleware, async (req, res) => {
 
         if(post.image && post.image.includes("cloudinary")){
             try {
-                const publicId = book.image.split("/").pop().split(".")[0];
+                const publicId = post.image.split("/").pop().split(".")[0];
                 await cloudinary.uploader.destroy(publicId);
             } catch (deleteErr) {
                 console.log("Error deleting image from cloud", deleteErr);

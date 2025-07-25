@@ -89,7 +89,6 @@ router.put("/update-email", authMiddleware, async (req, res) => {
   }
 });
 
-
 router.put("/update-password", authMiddleware, async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
@@ -115,8 +114,6 @@ router.put("/update-password", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
-
-//route for following a user: 
 
 router.post("/follow/:id", authMiddleware, async (req, res) => {
   try {
@@ -156,5 +153,32 @@ router.post("/follow/:id", authMiddleware, async (req, res) => {
   }
 });
 
+router.put("/add-bio", authMiddleware, async (req, res) => {
+  const { bio } = req.body;
+
+  if (!bio || bio.trim() === "") {
+    return res.status(400).json({ message: "Bio cannot be empty." });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id, 
+      { bio },
+      { new: true } 
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    res.status(200).json({
+      message: "Bio updated successfully.",
+      bio: user.bio,
+    });
+  } catch (error) {
+    console.error("Error updating bio:", error);
+    res.status(500).json({ message: "Server error." });
+  }
+});
 
 export default router;
