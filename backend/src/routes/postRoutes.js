@@ -127,6 +127,19 @@ router.get('/user', authMiddleware, async (req, res) => {
     }
 });
 
+router.get('/user/:userId/posts', async (req, res) => {
+  try {
+    const posts = await Post.find({ user: req.params.userId })
+      .sort({ createdAt: -1 })
+      .populate("user", "username profileImage");
+
+    res.json(posts);
+  } catch (error) {
+    console.log("Error getting the user's posts", error);
+    res.status(500).json({ message: "Internal server Error" });
+  }
+});
+
 
 router.post("/like/:postId", authMiddleware, async (req, res) => {
   try {
@@ -142,11 +155,11 @@ router.post("/like/:postId", authMiddleware, async (req, res) => {
     const alreadyLiked = post.likes.includes(userId);
 
     if (alreadyLiked) {
-      post.likes.pull(userId); // remove from post likes
-      user.likedPosts.pull(postId); // remove from user's likedPosts
+      post.likes.pull(userId); 
+      user.likedPosts.pull(postId); 
     } else {
-      post.likes.push(userId); // add to post likes
-      user.likedPosts.push(postId); // add to user's likedPosts
+      post.likes.push(userId); 
+      user.likedPosts.push(postId); 
     }
 
     await post.save();

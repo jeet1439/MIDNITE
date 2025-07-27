@@ -8,6 +8,7 @@ export const useAuthStore = create((set, get) => ({
   
   setUser: (user) => set({ user }),
   
+  
   signup: async(username, email, password) =>{
     set({isLoading : true});
     try {
@@ -29,7 +30,7 @@ export const useAuthStore = create((set, get) => ({
         await AsyncStorage.setItem("user", JSON.stringify(data.user));
         await AsyncStorage.setItem("token", data.token);
 
-        set({token: data.token, user: data.user, isLoading: false})
+        set({token: data.token, user: data.user, isLoading: false, currentUserId: data.user._id})
         return { success: true }
     } catch (error) {
         set({ isLoading: false });
@@ -72,7 +73,7 @@ export const useAuthStore = create((set, get) => ({
         await AsyncStorage.setItem("user", JSON.stringify(data.user));
         await AsyncStorage.setItem("token", data.token);
 
-        set({token: data.token, user: data.user, isLoading: false})
+        set({token: data.token, user: data.user, isLoading: false, currentUserId: data.user._id})
         return { success: true }
 
     } catch (error) {

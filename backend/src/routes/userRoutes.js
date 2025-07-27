@@ -6,6 +6,23 @@ import cloudinary from "../lib/cloudConfig.js";
 
 const router = express.Router();
 
+router.get('/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId).select('username email bio profileImage followers followings likedPosts');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 router.put("/update-username", authMiddleware, async (req, res) => {
   const { username } = req.body;
 
@@ -29,7 +46,6 @@ router.put("/update-username", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
-
 
 router.put("/update-profile", authMiddleware, async (req, res) => {
   const { newImage } = req.body;
@@ -64,8 +80,6 @@ router.put("/update-profile", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 });
-
-
 
 router.put("/update-email", authMiddleware, async (req, res) => {
   const { email } = req.body;

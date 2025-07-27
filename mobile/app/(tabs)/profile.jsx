@@ -304,7 +304,7 @@ export default function ProfileTab() {
     }
   };
    
-  console.log(user);
+  // console.log(user);
 
   return (
     <View style={styles.container}>

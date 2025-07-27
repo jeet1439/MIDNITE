@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
 
-   modalOverlay: {
+  modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     color: "green",
     fontWeight: "bold",
   },
-   menu: {
+  menu: {
     position: "absolute",
     top: 40,
     right: 20,
@@ -269,6 +269,31 @@ const styles = StyleSheet.create({
     color: "gray",
     paddingVertical: 5,
   },
+  buttonContainer: {
+  flexDirection: "row",
+  justifyContent: "space-between",
+  marginTop: 0,
+  marginBottom: 15,
+  marginHorizontal: 8,
+},
+
+headerBtn: {
+  flex: 1,
+  backgroundColor: COLORS.background,
+  paddingVertical: 5,
+  borderRadius: 8,
+  alignItems: "center",
+  marginHorizontal: 5, 
+  borderWidth: 1,
+  borderColor: COLORS.textSecondary,
+},
+
+headerBtnText: {
+  color: "black",
+  fontSize: 14,
+  fontWeight: "600",
+  letterSpacing: 1,
+},
 });
 
 export default styles;
