@@ -35,8 +35,8 @@ export default function Signup() {
    <View style={styles.container}>
    <View style={styles.card}>
     <View style={styles.header}>
-      <Text style={styles.title}>PageMates📚</Text>
-       <Text style={styles.subtitle}>Find and follow your reading buddies</Text>
+      <Text style={styles.title}>Midnite 🌌</Text>
+       <Text style={styles.subtitle}>Join the after-hours social scene</Text>
     </View>
 
       <View style={styles.formContainer}>

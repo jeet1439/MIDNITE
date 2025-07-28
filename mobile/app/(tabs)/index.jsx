@@ -43,7 +43,7 @@ export default function Home() {
 
       const data = await response.json();
       // console.log(data)
-      if (!response.ok) throw new Error(data.message || "Failed to fetch books");
+      if (!response.ok) throw new Error(data.message || "Failed to fetch posts");
 
       // todo fix it later
       // setPosts((prevPosts) => [...prevposts, ...data.posts]);
@@ -319,7 +319,7 @@ export default function Home() {
         onEndReachedThreshold={0.1}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>PageMates</Text>
+            <Text style={styles.headerTitle}>Midnite</Text>
             <Ionicons name="notifications-outline" size={24} color={COLORS.textPrimary} />
           </View>
         }
