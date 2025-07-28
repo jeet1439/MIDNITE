@@ -19,17 +19,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingLeft: 16,
+    paddingLeft: 3,
     paddingRight: 16, 
     marginBottom: 20,
     alignItems: "center",
   },
-  headerTitle: {
-    fontSize: 24,
-    fontFamily: "SpaceMono-Regular",
-    letterSpacing: 0.5,
-    color: COLORS.primary,
-    marginBottom: 8,
+  logo: {
+    width: 150,
+    height: 45,
   },
   postCard: {
     marginBottom: 20,
@@ -81,7 +78,7 @@ const styles = StyleSheet.create({
   postTitle: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#192131ff",
+    color: COLORS.textDark,
     marginBottom: 4,
   },
 

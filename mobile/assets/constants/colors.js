@@ -12,4 +12,21 @@ const COLORS = {
   black: "#000000",
 };
 
+
+// const COLORS = {
+//   primary: "#9B5DE5",      
+//   textPrimary: "#F15BB5",    
+//   textSecondary: "#00BBF9",  
+//   textDark: "#FEE440",      
+//   placeholderText: "#A0A0A0",
+//   background: "#0D0D2B",     
+//   cardBackground: "#1E1E3F", 
+//   inputBackground: "#2B2B4F",
+//   border: "#3A3A6A",         
+//   white: "#FFFFFF",         
+//   black: "#000000",        
+// };
+
+// export default COLORS;
+
 export default COLORS;

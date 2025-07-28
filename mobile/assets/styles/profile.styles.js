@@ -186,9 +186,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 8,
   },
-
+  profileBio: {
+    color: COLORS.textDark,
+    fontWeight: "400",
+     lineHeight: 18,
+  },
   followButtonText: {
-    color: "#fff",
+    color: COLORS.textDark,
     fontSize: 13,
     fontWeight: "600",
   },
@@ -289,7 +293,7 @@ headerBtn: {
 },
 
 headerBtnText: {
-  color: "black",
+  color: COLORS.textPrimary,
   fontSize: 14,
   fontWeight: "600",
   letterSpacing: 1,

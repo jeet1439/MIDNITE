@@ -6,6 +6,7 @@ import {
   RefreshControl,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from "react-native";
 import { useAuthStore } from "../../store/authStore.js";
 import { Image } from "expo-image";
@@ -18,7 +19,7 @@ import Loader from "../components/Loader.jsx";
 import { useFocusEffect } from "expo-router";
 import { router } from 'expo-router';
 import Modal from 'react-native-modal';
-
+import headerlogo from '../../assets/images/header-logo2.png';
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function Home() {
@@ -29,7 +30,10 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [visible, setVisible] = useState(false);
-  const [commet, setComment] = useState('');
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
   // console.log(user);
 
   const fetchPosts = async (pageNum = 1, refresh = false) => {
@@ -69,10 +73,6 @@ export default function Home() {
       } else setLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   fetchPosts();
-  // }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -154,7 +154,62 @@ export default function Home() {
     }
   };
 
-  // console.log(user);
+  const handleComment = async (postId) => {
+    if (!comment.trim()) return;
+
+    try {
+      const response = await fetch('http://192.168.0.100:3000/api/comments', {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          postId: postId,
+          text: comment,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add comment');
+      }
+
+      const data = await response.json();
+      // console.log('Comment added:', data);
+
+      setComment('');
+      setComments(prev => [data, ...prev]);;
+
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  }
+
+  const getComments = async (postId) => {
+    setVisible(true);
+    setSelectedPostId(postId);
+
+    try {
+      setLoadingComments(true);
+      const response = await fetch(`http://192.168.0.100:3000/api/comments/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+
+      const data = await response.json();
+      // console.log(data);
+      setComments(data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
 
   const renderItem = ({ item }) => (
     <View style={styles.postCard}>
@@ -232,10 +287,12 @@ export default function Home() {
                       />
                     )
                 }
-                <Text style={{ fontSize: 16 }}>{item.likes?.length || 0}</Text>
+                <Text style={{ fontSize: 16, color: COLORS.textDark }}>{item.likes?.length || 0}</Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => setVisible(true)}>
+            <TouchableOpacity onPress={() => {
+              getComments(item._id);
+            }} >
               <Ionicons name="chatbox-outline" size={23} color={COLORS.textPrimary} />
             </TouchableOpacity>
           </View>
@@ -255,21 +312,47 @@ export default function Home() {
                 <TextInput
                   placeholder="Write a comment..."
                   style={styles.input}
-                  value={commet}
+                  value={comment}
                   onChangeText={setComment}
+                  placeholderTextColor={COLORS.textSecondary}
                 />
-                <TouchableOpacity onPress={() => console.log("")} style={styles.iconButton}>
-                  <Ionicons name="send-outline" size={24} color="#71b6ffff" />
+                <TouchableOpacity onPress={() => handleComment(selectedPostId)} style={styles.iconButton}>
+                  <Ionicons name="send-outline" size={24} color="#2c74c2ff" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setVisible(false)} style={styles.iconButton}>
                   <Ionicons name="close-outline" size={24} color="#555" />
                 </TouchableOpacity>
               </View>
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 10 }}>
+                {loadingComments ? (
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                ) : comments.length === 0 ? (
+                  <Text style={{ textAlign: 'center', color: COLORS.textSecondary }}>No comments yet.</Text>
+                ) : (
+                  comments.map((commentItem) => (
+                    <View key={commentItem._id} style={{ marginBottom: 12 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Image
+                          source={{ uri: commentItem.userId?.profileImage[0] }}
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 15,
+                            marginRight: 8,
+                          }}
+                        />
+                        <Text style={{ fontWeight: 'bold', color: COLORS.textDark }}>{commentItem.userId?.username}</Text>
+                        <Text style={{color: COLORS.textDark }}>{formatPublishDate(commentItem.createdAt)}</Text>
+                      </View>
+                      <Text style={{ marginLeft: 38, color: COLORS.textPrimary }}>{commentItem.text}</Text>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
             </View>
           </View>
         </Modal>
         <Text style={styles.postTitle}>{item.title}</Text>
-        {/* <View style={styles.ratingContainer}>{renderRatingStars(item.rating)}</View> */}
         <Text style={styles.caption}>{item.caption}</Text>
         <Text style={styles.date}>Shared on {formatPublishDate(item.createdAt)}</Text>
       </View>
@@ -319,7 +402,11 @@ export default function Home() {
         onEndReachedThreshold={0.1}
         ListHeaderComponent={
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>Midnite</Text>
+            <Image
+              source={headerlogo}
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Ionicons name="notifications-outline" size={24} color={COLORS.textPrimary} />
           </View>
         }
