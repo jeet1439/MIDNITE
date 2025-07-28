@@ -5,7 +5,7 @@ import { useAuthStore } from '../../store/authStore.js'
 import styles from "../../assets/styles/settings.styles.js";
 import COLORS from "../../assets/constants/colors.js";
 import { Ionicons } from '@expo/vector-icons';
-
+import { router } from 'expo-router';
 
 export default function Settings() {
   const navigation = useNavigation();
@@ -26,7 +26,7 @@ export default function Settings() {
      <View style={styles.container}>
       <Text style={styles.header}>Settings</Text>
 
-      <TouchableOpacity style={styles.option}>
+      <TouchableOpacity style={styles.option} onPress={() => router.push(`/(tabs)`)}>
         <Ionicons name="home-outline" size={20} color={COLORS.textPrimary} />
         <Text style={styles.optionText}>Home</Text>
       </TouchableOpacity>

@@ -146,12 +146,46 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     justifyContent: "space-between",
   },
-
   likeButton: {
     flexDirection: "row",
     marginRight: 10,
     padding: 4,
     gap: 5,
+  },
+  flexRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  //comment styles
+
+   modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    height: '60%',
+    backgroundColor: COLORS.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginRight: 10,
+  },
+  iconButton: {
+    paddingHorizontal: 6,
   },
 });
 
