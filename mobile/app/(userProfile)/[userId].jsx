@@ -7,6 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import Loader from '../components/Loader';
 import COLORS from "../../assets/constants/colors.js";
 import styles from "../../assets/styles/profile.styles.js";
+import { BASE_URL } from "../../assets/constants/baseApi.js";
+
 
 export default function UserProfile() {
   const { token, setUser, user } = useAuthStore();
@@ -21,7 +23,7 @@ export default function UserProfile() {
 
   const fetchUser = async () => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/user/${userId}`);
+      const res = await fetch(`${BASE_URL}/api/user/${userId}`);
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.message || 'Failed to fetch user');
@@ -35,7 +37,7 @@ export default function UserProfile() {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`http://192.168.0.100:3000/api/posts/user/${userId}/posts`);
+      const response = await fetch(`${BASE_URL}/api/posts/user/${userId}/posts`);
       const data = await response.json();
       setPosts(data);
     } catch (error) {
@@ -54,7 +56,7 @@ export default function UserProfile() {
 
   const handleFollow = async (userId) => {
     try {
-    const res = await fetch(`http://192.168.0.100:3000/api/user/follow/${userId}`, {
+    const res = await fetch(`${BASE_URL}/api/user/follow/${userId}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -91,7 +93,7 @@ export default function UserProfile() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/posts/like/${postId}`, {
+      const res = await fetch(`${BASE_URL}/api/posts/like/${postId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

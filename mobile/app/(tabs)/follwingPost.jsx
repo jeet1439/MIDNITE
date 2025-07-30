@@ -20,7 +20,7 @@ import { useFocusEffect } from "expo-router";
 import { router } from 'expo-router';
 import Modal from 'react-native-modal';
 import headerlogo from '../../assets/images/header-logo2.png';
-
+import { BASE_URL } from "../../assets/constants/baseApi.js";
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -37,7 +37,7 @@ export default function follwingPost() {
   const [comments, setComments] = useState([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
-
+ 
   // console.log(user);
 
   const fetchPosts = async (pageNum = 1, refresh = false) => {
@@ -45,7 +45,7 @@ export default function follwingPost() {
       if (refresh) setRefreshing(true);
       else if (pageNum === 1) setLoading(true);
 
-      const response = await fetch(`http://192.168.0.100:3000/api/posts/following?page=${pageNum}&limit=2`, {
+      const response = await fetch(`${BASE_URL}/api/posts/following?page=${pageNum}&limit=2`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -95,7 +95,7 @@ export default function follwingPost() {
 
   const handleFollow = async (userId) => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/user/follow/${userId}`, {
+      const res = await fetch(`${BASE_URL}/api/user/follow/${userId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -123,7 +123,7 @@ export default function follwingPost() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/posts/like/${postId}`, {
+      const res = await fetch(`${BASE_URL}/api/posts/like/${postId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -166,7 +166,7 @@ export default function follwingPost() {
     if (!comment.trim()) return;
 
     try {
-      const response = await fetch('http://192.168.0.100:3000/api/comments', {
+      const response = await fetch('${BASE_URL}/api/comments', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -199,7 +199,7 @@ export default function follwingPost() {
 
     try {
       setLoadingComments(true);
-      const response = await fetch(`http://192.168.0.100:3000/api/comments/${postId}`, {
+      const response = await fetch(`${BASE_URL}/api/comments/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -381,7 +381,7 @@ export default function follwingPost() {
             <Image
               source={headerlogo}
               style={styles.logo}
-              resizeMode="contain"
+              contentFit="contain"
             />
             <Ionicons name="notifications-outline" size={24} color={COLORS.textPrimary} />
           </View>

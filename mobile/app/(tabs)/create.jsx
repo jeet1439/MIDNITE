@@ -18,6 +18,8 @@ import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuthStore } from '../../store/authStore.js';
+import { BASE_URL } from '../../assets/constants/baseApi.js';
+
 
 const CreatePostScreen = () => {
   const [title, setTitle] = useState('');
@@ -76,7 +78,7 @@ const CreatePostScreen = () => {
 
       const imageDataUrl = `data:${imageType};base64,${imageBase64}`;
       // console.log(token);
-      const res  = await fetch(`http://192.168.0.100:3000/api/posts`, {
+      const res  = await fetch(`${BASE_URL}/api/posts`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

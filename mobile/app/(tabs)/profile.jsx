@@ -9,6 +9,7 @@ import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { useFocusEffect } from "expo-router";
 import { formatPublishDate } from "../../lib/utils.js";
+import { BASE_URL } from "../../assets/constants/baseApi.js";
 
 export default function ProfileTab() {
   const { user, setUser, token } = useAuthStore();
@@ -27,7 +28,7 @@ export default function ProfileTab() {
     try {
       setLoading(true);
 
-      const response = await fetch("http://192.168.0.100:3000/api/user/update-profile", {
+      const response = await fetch("${BASE_URL}/api/user/update-profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +102,7 @@ export default function ProfileTab() {
   const fetchPosts = async () => {
     try {
       setRefreshing(true);
-      const response = await fetch("http://192.168.0.100:3000/api/posts/user", {
+      const response = await fetch("${BASE_URL}/api/posts/user", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -131,7 +132,7 @@ export default function ProfileTab() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/posts/like/${postId}`, {
+      const res = await fetch(`${BASE_URL}/api/posts/like/${postId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -174,7 +175,7 @@ export default function ProfileTab() {
   const handleDeletePost = async (id) => {
     try {
       setLoading(true);
-      const response = await fetch(`http://192.168.0.100:3000/api/posts/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/posts/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -276,7 +277,7 @@ export default function ProfileTab() {
 
   const updateBio = async (bioText) => {
     try {
-      const response = await fetch("http://192.168.0.100:3000/api/user/add-bio", {
+      const response = await fetch("${BASE_URL}/api/user/add-bio", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -20,6 +20,8 @@ import { useFocusEffect } from "expo-router";
 import { router } from 'expo-router';
 import Modal from 'react-native-modal';
 import headerlogo from '../../assets/images/header-logo2.png';
+import { BASE_URL } from "../../assets/constants/baseApi.js";
+
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default function Home() {
@@ -41,7 +43,7 @@ export default function Home() {
       if (refresh) setRefreshing(true);
       else if (pageNum === 1) setLoading(true);
 
-      const response = await fetch(`http://192.168.0.100:3000/api/posts/?page=${pageNum}&limit=2`, {
+      const response = await fetch(`${BASE_URL}/api/posts/?page=${pageNum}&limit=2`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -87,7 +89,7 @@ export default function Home() {
 
   const handleFollow = async (userId) => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/user/follow/${userId}`, {
+      const res = await fetch(`${BASE_URL}/api/user/follow/${userId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -115,7 +117,7 @@ export default function Home() {
 
   const handleLike = async (postId) => {
     try {
-      const res = await fetch(`http://192.168.0.100:3000/api/posts/like/${postId}`, {
+      const res = await fetch(`${BASE_URL}/api/posts/like/${postId}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -158,7 +160,7 @@ export default function Home() {
     if (!comment.trim()) return;
 
     try {
-      const response = await fetch('http://192.168.0.100:3000/api/comments', {
+      const response = await fetch('${BASE_URL}/api/comments', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +193,7 @@ export default function Home() {
 
     try {
       setLoadingComments(true);
-      const response = await fetch(`http://192.168.0.100:3000/api/comments/${postId}`, {
+      const response = await fetch(`${BASE_URL}/api/comments/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
