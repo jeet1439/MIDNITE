@@ -166,7 +166,7 @@ export default function follwingPost() {
     if (!comment.trim()) return;
 
     try {
-      const response = await fetch('${BASE_URL}/api/comments', {
+      const response = await fetch(`${BASE_URL}/api/comments`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',

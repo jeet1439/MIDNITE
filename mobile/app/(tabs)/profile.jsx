@@ -1,10 +1,11 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator, TextInput, Modal } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator, TextInput,ScrollView } from "react-native";
 import React, { useCallback } from "react";
 import { useAuthStore } from "../../store/authStore.js";
 import COLORS from "../../assets/constants/colors.js";
 import styles from "../../assets/styles/profile.styles.js";
 import { Ionicons } from "@expo/vector-icons";
 import Loader from "../components/Loader.jsx";
+import Modal from 'react-native-modal';
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { useFocusEffect } from "expo-router";
@@ -23,12 +24,18 @@ export default function ProfileTab() {
   const [newBio, setNewBio] = useState(user?.bio || "");
   const [menuVisible, setMenuVisible] = useState(false);
 
+    
+  const [visible, setVisible] = useState(false);
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
 
   const updateProfileImage = async (imageDataUrl) => {
     try {
       setLoading(true);
 
-      const response = await fetch("${BASE_URL}/api/user/update-profile", {
+      const response = await fetch(`${BASE_URL}/api/user/update-profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -102,7 +109,7 @@ export default function ProfileTab() {
   const fetchPosts = async () => {
     try {
       setRefreshing(true);
-      const response = await fetch("${BASE_URL}/api/posts/user", {
+      const response = await fetch(`${BASE_URL}/api/posts/user`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -118,7 +125,7 @@ export default function ProfileTab() {
       setPosts(data); // update post list
     } catch (error) {
       console.log("Fetch posts error:", error);
-      Alert.alert("Error", "Could not load posts");
+      Alert.alert("Error", "Could not load posts, Try to re-login");
     } finally {
       setRefreshing(false);
     }
@@ -196,6 +203,94 @@ export default function ProfileTab() {
     }
   };
 
+  const updateBio = async (bioText) => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/user/add-bio`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // assuming you have the token
+        },
+        body: JSON.stringify({ bio: bioText }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update bio");
+      }
+
+      Alert.alert("Success", "Bio updated successfully");
+      // setUser((prev) => ({ ...prev, bio: data.bio }));
+      setUser({
+        ...user,
+        bio: data.bio,
+      });
+
+    } catch (error) {
+      console.error("Update bio error:", error);
+      Alert.alert("Error", "Could not update bio");
+    }
+  };
+
+  // console.log(user);
+
+  const handleComment = async (postId) => {
+    if (!comment.trim()) return;
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/comments`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          postId: postId,
+          text: comment,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add comment');
+      }
+
+      const data = await response.json();
+      // console.log('Comment added:', data);
+
+      setComment('');
+      setComments(prev => [data, ...prev]);;
+
+    } catch (error) {
+      console.error('Error posting comment:', error);
+    }
+  }
+
+  const getComments = async (postId) => {
+    setVisible(true);
+    setSelectedPostId(postId);
+
+    try {
+      setLoadingComments(true);
+      const response = await fetch(`${BASE_URL}/api/comments/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments');
+      }
+
+      const data = await response.json();
+      // console.log(data);
+      setComments(data);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
 
   const renderItem = ({ item }) => (
 
@@ -239,8 +334,7 @@ export default function ProfileTab() {
       {/* Like + View */}
       <View style={styles.postDetails}>
         <View style={styles.likeRow}>
-          <View>
-
+          <View style={styles.flexRow}>
             <TouchableOpacity
               style={styles.likeButton}
               onPress={() => handleLike(item._id)}
@@ -263,10 +357,66 @@ export default function ProfileTab() {
               }
               <Text>{item.likes?.length || 0}</Text>
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => {
+              getComments(item._id);
+            }} >
+              <Ionicons name="chatbox-outline" size={23} color={COLORS.textPrimary} />
+            </TouchableOpacity>
           </View>
           <Text style={styles.engagementText}>{item.views || 0} views</Text>
         </View>
-
+         <Modal
+          isVisible={visible}
+          onBackdropPress={() => setVisible(false)}
+          onBackButtonPress={() => setVisible(false)}
+          style={{ margin: 0 }}
+          hideModalContentWhileAnimating
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.row}>
+                <TextInput
+                  placeholder="Write a comment..."
+                  style={styles.input}
+                  value={comment}
+                  onChangeText={setComment}
+                />
+                <TouchableOpacity onPress={() => handleComment(selectedPostId)} style={styles.iconButton}>
+                  <Ionicons name="send-outline" size={24} color="#2c74c2ff" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setVisible(false)} style={styles.iconButton}>
+                  <Ionicons name="close-outline" size={24} color="#555" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 10 }}>
+                {loadingComments ? (
+                  <ActivityIndicator size="small" color={COLORS.primary} />
+                ) : comments.length === 0 ? (
+                  <Text style={{ textAlign: 'center', color: COLORS.textSecondary }}>No comments yet.</Text>
+                ) : (
+                  comments.map((commentItem) => (
+                    <View key={commentItem._id} style={{ marginBottom: 12 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Image
+                          source={{ uri: commentItem.userId?.profileImage[0] }}
+                          style={{
+                            width: 30,
+                            height: 30,
+                            borderRadius: 15,
+                            marginRight: 8,
+                          }}
+                        />
+                        <Text style={{ fontWeight: 'bold' }}>{commentItem.userId?.username}</Text>
+                        <Text>    {formatPublishDate(commentItem.createdAt)}</Text>
+                      </View>
+                      <Text style={{ marginLeft: 38, color: COLORS.textPrimary }}>{commentItem.text}</Text>
+                    </View>
+                  ))
+                )}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
         <Text style={styles.postTitle}>{item.title}</Text>
         {/* <View style={styles.ratingContainer}>{renderRatingStars(item.rating)}</View> */}
         <Text style={styles.caption}>{item.caption}</Text>
@@ -274,38 +424,6 @@ export default function ProfileTab() {
       </View>
     </View>
   );
-
-  const updateBio = async (bioText) => {
-    try {
-      const response = await fetch("${BASE_URL}/api/user/add-bio", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // assuming you have the token
-        },
-        body: JSON.stringify({ bio: bioText }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to update bio");
-      }
-
-      Alert.alert("Success", "Bio updated successfully");
-      // setUser((prev) => ({ ...prev, bio: data.bio }));
-      setUser({
-        ...user,
-        bio: data.bio,
-      });
-
-    } catch (error) {
-      console.error("Update bio error:", error);
-      Alert.alert("Error", "Could not update bio");
-    }
-  };
-   
-  // console.log(user);
 
   return (
     <View style={styles.container}>
@@ -317,7 +435,7 @@ export default function ProfileTab() {
             <View style={styles.profileHeader}>
               <TouchableOpacity onPress={pickImage}>
                 <Image
-                source={{uri: user.profileImage[0].replace("svg", "png").trim()}}
+                  source={{ uri: user.profileImage[0].replace("svg", "png").trim() }}
                   style={styles.profileAvatar}
                 />
               </TouchableOpacity>

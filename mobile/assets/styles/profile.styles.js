@@ -215,7 +215,10 @@ const styles = StyleSheet.create({
     padding: 4,
     gap: 5,
   },
-
+  flexRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -298,6 +301,35 @@ headerBtnText: {
   fontWeight: "600",
   letterSpacing: 1,
 },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    height: '60%',
+    backgroundColor: COLORS.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    width: '100%',
+    alignSelf: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  input: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    marginRight: 10,
+  },
+  iconButton: {
+    paddingHorizontal: 6,
+  },
 });
 
 export default styles;
