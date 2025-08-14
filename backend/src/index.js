@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
+import followerRoutes from "./routes/attachRoutes.js";
 const app = express();
 
 app.use(express.json({ limit: '20mb' }));
@@ -23,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
+app.use("/api/flw", followerRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is working");

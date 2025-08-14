@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator, TextInput,ScrollView } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator, TextInput, ScrollView } from "react-native";
 import React, { useCallback } from "react";
 import { useAuthStore } from "../../store/authStore.js";
 import COLORS from "../../assets/constants/colors.js";
@@ -11,6 +11,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useFocusEffect } from "expo-router";
 import { formatPublishDate } from "../../lib/utils.js";
 import { BASE_URL } from "../../assets/constants/baseApi.js";
+import { router } from 'expo-router';
 
 export default function ProfileTab() {
   const { user, setUser, token } = useAuthStore();
@@ -24,7 +25,7 @@ export default function ProfileTab() {
   const [newBio, setNewBio] = useState(user?.bio || "");
   const [menuVisible, setMenuVisible] = useState(false);
 
-    
+
   const [visible, setVisible] = useState(false);
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
@@ -365,7 +366,7 @@ export default function ProfileTab() {
           </View>
           <Text style={styles.engagementText}>{item.views || 0} views</Text>
         </View>
-         <Modal
+        <Modal
           isVisible={visible}
           onBackdropPress={() => setVisible(false)}
           onBackButtonPress={() => setVisible(false)}
@@ -447,10 +448,15 @@ export default function ProfileTab() {
                     <Ionicons name="create-outline" size={18} color="gray" /></TouchableOpacity>
                 </View>
                 <View style={styles.statsContainer}>
-                  <View style={styles.statBox}>
+                  <TouchableOpacity
+                    style={styles.statBox}
+                    onPress={() => {
+                      router.push("/(userProfile)/followers");
+                    }}
+                  >
                     <Text style={styles.statNumber}>{user.followers.length}</Text>
                     <Text style={styles.statLabel}>Followers</Text>
-                  </View>
+                  </TouchableOpacity>
                   <View style={styles.statBox}>
                     <Text style={styles.statNumber}>{user.followings.length}</Text>
                     <Text style={styles.statLabel}>Following</Text>
