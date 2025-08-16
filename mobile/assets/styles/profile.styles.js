@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
 
   postImageContainer: {
     width: "100%",
-    aspectRatio: 1, // square like Instagram
+    aspectRatio: 1,
     backgroundColor: COLORS.border,
   },
 
@@ -223,7 +223,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
     width: "85%",
@@ -301,11 +300,26 @@ headerBtnText: {
   fontWeight: "600",
   letterSpacing: 1,
 },
-  modalOverlay: {
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  // input: {
+  //   flex: 1, 
+  //   borderWidth: 1,
+  //   borderColor: '#ccc',
+  //   borderRadius: 8,
+  //   height: 20,
+  //   paddingHorizontal: 10,
+  //   paddingVertical: 8,
+  //   marginRight: 10,
+  // },
+    modalOverlay2: {
     flex: 1,
     justifyContent: 'flex-end',
   },
-  modalContent: {
+  modalContent2: {
     height: '60%',
     backgroundColor: COLORS.background,
     borderTopLeftRadius: 20,
@@ -314,11 +328,7 @@ headerBtnText: {
     width: '100%',
     alignSelf: 'center',
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  input: {
+  input2: {
     flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',

@@ -373,12 +373,12 @@ export default function ProfileTab() {
           style={{ margin: 0 }}
           hideModalContentWhileAnimating
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+          <View style={styles.modalOverlay2}>
+            <View style={styles.modalContent2}>
               <View style={styles.row}>
                 <TextInput
                   placeholder="Write a comment..."
-                  style={styles.input}
+                  style={styles.input2}
                   value={comment}
                   onChangeText={setComment}
                 />
@@ -457,10 +457,15 @@ export default function ProfileTab() {
                     <Text style={styles.statNumber}>{user.followers.length}</Text>
                     <Text style={styles.statLabel}>Followers</Text>
                   </TouchableOpacity>
-                  <View style={styles.statBox}>
+                  <TouchableOpacity
+                  style={styles.statBox} 
+                  onPress={() => {
+                      router.push("/(userProfile)/followings");
+                    }}
+                  >
                     <Text style={styles.statNumber}>{user.followings.length}</Text>
                     <Text style={styles.statLabel}>Following</Text>
-                  </View>
+                  </TouchableOpacity>
                   <View style={styles.statBox}>
                     <Text style={styles.statNumber}>{user.likedPosts.length}</Text>
                     <Text style={styles.statLabel}>Likes</Text>

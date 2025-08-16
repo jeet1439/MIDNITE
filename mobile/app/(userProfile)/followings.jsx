@@ -6,25 +6,25 @@ import COLORS from "../../assets/constants/colors.js";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native";
 import { router } from "expo-router";
-const Followers = () => {
+const Followings = () => {
   const { user, token } = useAuthStore();
-  const [followers, setFollowers] = useState([]);
+  const [followings, setFollowings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchFollowers = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/flw/followers/${user._id}`, {
+      const res = await fetch(`${API_URL}/api/flw/followings/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to fetch followers");
+      if (!res.ok) throw new Error(data.message || "Failed to fetch followings");
 
-      setFollowers(data.followers || []);
+      setFollowings(data.followings || []);
     } catch (err) {
       console.log("Followers fetch error:", err);
-      Alert.alert("Error", "Could not load followers");
+      Alert.alert("Error", "Could not load followings");
     } finally {
       setLoading(false);
     }
@@ -67,9 +67,9 @@ const Followers = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#e3f2fd" }}>
     <View>
-    <Text style={styles.text}>Followers</Text>
+    <Text style={styles.text}>Followings</Text>
       <FlatList
-        data={followers}
+        data={followings}
         keyExtractor={(item) => item._id}
         renderItem={renderItem}
         contentContainerStyle={{ padding: 16 }}
@@ -77,7 +77,7 @@ const Followers = () => {
           <View style={styles.center}>
             <Ionicons name="people-outline" size={50} color={COLORS.textSecondary} />
             <Text style={{ color: COLORS.textSecondary, marginTop: 8 }}>
-              No followers yet
+              No followings yet
             </Text>
           </View>
         }
@@ -87,7 +87,7 @@ const Followers = () => {
   );
 };
 
-export default Followers;
+export default Followings;
 
 
 const styles = StyleSheet.create({

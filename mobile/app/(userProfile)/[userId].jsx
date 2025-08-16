@@ -241,12 +241,12 @@ export default function UserProfile() {
           style={{ margin: 0 }}
           hideModalContentWhileAnimating
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+          <View style={styles.modalOverlay2}>
+            <View style={styles.modalContent2}>
               <View style={styles.row}>
                 <TextInput
                   placeholder="Write a comment..."
-                  style={styles.input}
+                  style={styles.input2}
                   value={comment}
                   onChangeText={setComment}
                 />
