@@ -15,5 +15,4 @@ Here, **midnight isn’t the end of the day — it’s the start of something un
 > 🔹 This APK can be installed directly on Android devices.  
 > 🔹 If blocked, allow installation from "Unknown sources" in phone settings.
 
-## 📹 Check out the demo of the app on YouTube: 
-[![app](https://img.youtube.com/vi/c5a_jsvGCFQ/maxresdefault.jpg)](https://youtu.be/c5a_jsvGCFQ?si=pX_YKqymGBPIskMS)
+
