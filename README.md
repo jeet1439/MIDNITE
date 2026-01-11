@@ -6,3 +6,4 @@ Whether you're sharing a late-night thought, catching a vibe, or meeting someone
 
 With its vibrant community and sleek dark aesthetic, **Midnite** isn’t just a social app — it’s a lifestyle.  
 Here, **midnight isn’t the end of the day — it’s the start of something unforgettable**.
+
