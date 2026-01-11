@@ -210,7 +210,7 @@ export default function ProfileTab() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // assuming you have the token
+          Authorization: `Bearer ${token}`, 
         },
         body: JSON.stringify({ bio: bioText }),
       });

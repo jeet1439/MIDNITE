@@ -1,11 +1,10 @@
-import { View, Text, FlatList, Image, ActivityIndicator, Alert, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useEffect, useState } from "react";
-import { useAuthStore } from "../../store/authStore.js"; // adjust path if needed
-import { API_URL } from "../../assets/constants/api.js";
-import COLORS from "../../assets/constants/colors.js";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { BASE_URL } from "../../assets/constants/baseApi.js";
+import COLORS from "../../assets/constants/colors.js";
+import { useAuthStore } from "../../store/authStore.js"; // adjust path if needed
 const Followings = () => {
   const { user, token } = useAuthStore();
   const [followings, setFollowings] = useState([]);
@@ -14,7 +13,7 @@ const Followings = () => {
   const fetchFollowers = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/flw/followings/${user._id}`, {
+      const res = await fetch(`${BASE_URL}/api/flw/followings/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
