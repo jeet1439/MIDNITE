@@ -433,6 +433,19 @@ export default function ProfileTab() {
       ) : (
         <>
           <View style={styles.container}>
+            <View style={styles.topBar}>
+              <Text style={styles.topBarTitle}>Profile</Text>
+              <TouchableOpacity
+                style={styles.topBarIconButton}
+                onPress={() => router.push("/(tabs)/chats")}
+              >
+                <Ionicons
+                  name="chatbubble-ellipses-outline"
+                  size={22}
+                  color={COLORS.textPrimary}
+                />
+              </TouchableOpacity>
+            </View>
             <View style={styles.profileHeader}>
               <TouchableOpacity onPress={pickImage}>
                 <Image

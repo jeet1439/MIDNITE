@@ -1,7 +1,7 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform, Alert, FlatList, RefreshControl, ActivityIndicator, Linking, ScrollView, TextInput } from "react-native";
+import { View, Text, Image, TouchableOpacity, FlatList, RefreshControl, ActivityIndicator, ScrollView, TextInput } from "react-native";
 import React, { useEffect, useState } from 'react';
 import { useAuthStore } from "../../store/authStore.js";
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { formatPublishDate } from '../../lib/utils';
 import { Ionicons } from '@expo/vector-icons';
 import Loader from '../components/Loader';
@@ -14,9 +14,8 @@ export default function UserProfile() {
   const { token, setUser, user } = useAuthStore();
   const { userId } = useLocalSearchParams();
 
-  const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
   const [puser, setPUser] = useState(null);
 
 
@@ -37,20 +36,19 @@ export default function UserProfile() {
       setPUser(data);
     } catch (err) {
       console.error('Error fetching user:', err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   const fetchPosts = async () => {
     try {
+      setRefreshing(true);
       const response = await fetch(`${BASE_URL}/api/posts/user/${userId}/posts`);
       const data = await response.json();
       setPosts(data);
     } catch (error) {
       console.error('Error fetching user posts:', error);
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -340,12 +338,18 @@ export default function UserProfile() {
               <TouchableOpacity
                 style={styles.headerBtn}
                 onPress={() =>
-                  Linking.openURL(
-                    `mailto:${puser.email}?subject=Inquiry%20from%20your%20profile&body=Hi%20${puser.username},%0D%0A%0D%0AI%20just%20saw%20your%20profile%20and%20wanted%20to%20get%20in%20touch.%0D%0A%0D%0ALet%20me%20know%20when%20you%20are%20available.%0D%0A%0D%0ABest%20regards,`
-                  )
+                  router.push({
+                    pathname: "/chat/[conversationId]",
+                    params: {
+                      conversationId: "new",
+                      participantId: puser._id,
+                      participantName: puser.username,
+                      participantAvatar: puser?.profileImage?.[0] || "",
+                    },
+                  })
                 }
               >
-                <Text style={styles.headerBtnText}>Contact</Text>
+                <Text style={styles.headerBtnText}>Message</Text>
               </TouchableOpacity>
             </View>
             <FlatList

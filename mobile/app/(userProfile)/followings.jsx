@@ -45,8 +45,15 @@ const Followings = () => {
     <TouchableOpacity
       style={styles.messageBtn}
       onPress={() => {
-       
-        console.log("Message pressed for:", item.username);
+        router.push({
+          pathname: "/chat/[conversationId]",
+          params: {
+            conversationId: "new",
+            participantId: item._id,
+            participantName: item.username,
+            participantAvatar: item?.profileImage?.[0] || "",
+          },
+        });
       }}
     >
      <Text style={styles.messageText}>Message</Text>

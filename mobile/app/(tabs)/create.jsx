@@ -116,7 +116,7 @@ const CreatePostScreen = () => {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <StatusBar barStyle="dark-content" />
+      {/* <StatusBar barStyle="dark-content" /> */}
       
       {/* Header */}
       <View style={styles.header}>

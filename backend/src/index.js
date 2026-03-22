@@ -1,16 +1,18 @@
 import express from "express";
 import cors from "cors";
-
-
 import "dotenv/config";
 import mongoose from "mongoose";
+import http from "http";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import followerRoutes from "./routes/attachRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import { initializeSocket } from "./lib/socket.js";
 const app = express();
+const server = http.createServer(app);
 
 app.use(express.json({ limit: '20mb' }));
 app.use(cors());
@@ -25,13 +27,16 @@ app.use("/api/user", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/flw", followerRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is working");
 });
 
-app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+initializeSocket(server);
+
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
     mongoose.connect(MONGO_URI)
     .then(() => {
         console.log("DB connected");

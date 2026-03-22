@@ -5,7 +5,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 10,
+    // paddingTop: 10,
+  },
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    marginBottom: 18,
+  },
+  topBarTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: COLORS.textDark,
+  },
+  topBarIconButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   profileHeader: {
